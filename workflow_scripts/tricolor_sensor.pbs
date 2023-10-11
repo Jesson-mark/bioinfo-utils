@@ -1,0 +1,50 @@
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+#arguments: work_dir input_bam out_dir 
+threads=1 # 该模块属于单线程，threads设为1就行
+ref_genome=/public/group_share_data/fan_lab/wangjie/genome/hg38/hg38_22_XYM.fa
+
+### cmds to pass arguments to this script
+# jobname=sensor_${sample_id}
+# log=${log_dir}/${jobname}.log
+# args=$(echo work_dir=$work_dir,input_bam=$haplotagged_bam, \
+#         out_dir=$sensor_out_dir | tr -d ' ' )
+# echo qsub -N ${jobname} -q fat -o $log -l nodes=1:ppn=${sensor_threads} -v $args $sensor_script
+
+########################## softwares ##########################
+tricolor_latest_sif=/public/home/fan_lab/wangjie/singularity_images/tricolor_latest.sif
+singularity=/public/software/apps/singularity/3.5.2/bin/singularity
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to analysis"
+myprint "out_dir is $out_dir"
+myprint "input bam is $input_bam"
+myprint "Threads is $threads"
+
+myprint "Begin to run SENSoR"
+$singularity exec --bind /usr/lib/locale/,/public/group_share_data/fan_lab/wangjie/ \
+    $tricolor_latest_sif \
+    TRiCoLOR SENSoR -bam $input_bam -o $out_dir
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Program is done"
+

@@ -1,0 +1,28 @@
+#!/bin/bash
+#PBS -j oe
+
+# work_dir
+# bam
+# out_dir
+# mem_size
+
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+# variables
+cd $work_dir
+myprint "Working dir is: "$work_dir
+
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+
+myprint "Running qualimap for $bam , out dir is $out_dir"
+qualimap bamqc -bam $bam -outdir $out_dir -outformat PDF --java-mem-size $mem_size
+
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Program is done"
+

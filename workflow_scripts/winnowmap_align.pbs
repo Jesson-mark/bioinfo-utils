@@ -1,0 +1,72 @@
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+#arguments: work_dir, data, preset out_prefix, out_dir, threads, enable_soft_clipping
+# threads: must be an integer multiple of 3
+
+
+########################## softwares ##########################
+samtools="/public/home/fan_lab/wangjie/Programs/samtools-1.13/bin/samtools"
+winnowmap="/public/home/fan_lab/wangjie/Programs/Winnowmap-2.03/bin/winnowmap"
+genome="/public/home/fan_lab/wangjie/genome/hg38/hg38_22_XYM.fa"
+repetitive_file="/public/home/fan_lab/wangjie/genome/repetitive_k15.txt"
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to analysis"
+
+pthreads=`expr $threads / 3`
+out_raw_bam=${out_dir}/${out_prefix}.q20.bam
+out_sort_bam=${out_dir}/${out_prefix}.q20.sort.bam
+
+if [ $preset == 'hifi' ]; then
+    if [[ $enable_soft_clipping == 'y' ]]; then
+        $winnowmap -W $repetitive_file -t ${pthreads} -K 500M -ax map-pb -Y $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+    else
+        $winnowmap -W $repetitive_file -t ${pthreads} -K 500M -ax map-pb $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+    fi
+elif [ $preset == 'ont' ]; then
+    if [[ $enable_soft_clipping == 'y' ]]; then
+        $winnowmap -W $repetitive_file -t ${pthreads} -K 500M -ax map-ont -Y $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+    else
+        $winnowmap -W $repetitive_file -t ${pthreads} -K 500M -ax map-ont $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+    fi
+elif [ $preset == 'fasta' ]; then
+    if [[ $enable_soft_clipping == 'y' ]]; then
+        $winnowmap -W $repetitive_file --sv-off -t ${pthreads} -K 500M -a -Y $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+    else
+        $winnowmap -W $repetitive_file --sv-off -t ${pthreads} -K 500M -a $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+    fi
+fi
+
+myprint "Sorting bam..."
+$samtools sort -l 5 -@ ${threads} -o ${out_sort_bam} ${out_raw_bam}
+$samtools index -@ ${threads} ${out_sort_bam}
+
+myprint "raw bam size are as follows"
+ls -lh ${out_raw_bam}
+
+myprint "Cleaning unsorted bam..."
+rm ${out_raw_bam}
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Threads is $threads"
+myprint "Program is done"
+

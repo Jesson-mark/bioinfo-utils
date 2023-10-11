@@ -1,0 +1,22 @@
+[ 2023-02-14 18:12:03 ] [ Working dir is: /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts ]
+[ 2023-02-14 18:12:03 ] [ Begin to analysis ]
+[ 2023-02-14 18:12:03 ] [ sample_id is HG002 ]
+[ 2023-02-14 18:12:03 ] [ raw_bed is vntr_results/per_sample_dir/HG002/raw.bed ]
+[ 2023-02-14 18:12:03 ] [ out_prefix is vntr_results/per_sample_dir/HG002/clean ]
+[ 2023-02-14 18:12:03 ] [ tr_region is /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/ref_vntr/60_straglr_ref_vntrs.bed ]
+2023-02-14 18:12:53 INFO clean_straglr_result.py clean_bed_file[line:198] : Total 60 loci of /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/ref_vntr/60_straglr_ref_vntrs.bed are loaded
+2023-02-14 18:12:53 INFO clean_straglr_result.py clean_tsv_file[line:115] : Cleaning raw tsv file: vntr_results/per_sample_dir/HG002/raw.tsv
+2023-02-14 18:12:53 INFO clean_straglr_result.py clean_tsv_file[line:153] : Calculate std and cv of read copy numbers
+2023-02-14 18:12:53 INFO clean_straglr_result.py clean_tsv_file[line:175] : Done. Total 29 TRs are calculated
+2023-02-14 18:12:53 INFO clean_straglr_result.py clean_bed_file[line:222] : Total 29 vntrs of vntr_results/per_sample_dir/HG002/raw.bed are loaded
+2023-02-14 18:12:53 INFO clean_straglr_result.py clean_bed_file[line:224] : Begin to write clean results to vntr_results/per_sample_dir/HG002/clean.vcf
+2023-02-14 18:12:53 INFO clean_straglr_result.py clean_bed_file[line:275] : Number of support reads of allele1(chr1:10757_10997) is below 5. It will be discarded
+2023-02-14 18:12:54 INFO clean_straglr_result.py clean_bed_file[line:306] : Done. Output file is vntr_results/per_sample_dir/HG002/clean.vcf
+[ 2023-02-14 18:12:54 ] [ Begin to sort vcf file, result is vntr_results/per_sample_dir/HG002/clean.sorted.vcf.gz ]
+Writing to /tmp/bcftools.3Hkctz
+Merging 1 temporary files
+Cleaning
+Done
+[ 2023-02-14 18:12:54 ] [ Final result is vntr_results/per_sample_dir/HG002/clean.sorted.vcf.gz ]
+Total time: 0 minutes, 51 seconds.
+[ 2023-02-14 18:12:54 ] [ Program is done ]

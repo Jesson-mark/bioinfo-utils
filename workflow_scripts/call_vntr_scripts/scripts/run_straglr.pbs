@@ -1,0 +1,43 @@
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+#arguments: work_dir tr_bed bam out_prefix threads max_str_len min_str_len
+
+########################## softwares ##########################
+export PATH=/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin/:$PATH
+genome="/public/home/fan_lab/wangjie/genome/hg38/hg38_22_XYM.fa"
+# straglr="/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin/straglr.py"
+python='/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin/python'
+# straglr=/public/home/fan_lab/wangjie/Programs/straglr_modified/straglr.py # 使用修改过的straglr
+straglr=/public/home/fan_lab/wangjie/Programs/straglr_blastn_improved/straglr.py # 使用作者最新修改过的straglr
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to analysis. Threads is $threads"
+myprint "tr_bed is $tr_bed, bam is $bam, out_prefix is $out_prefix"
+myprint "max_str_len is $max_str_len, min_str_len is $min_str_len"
+
+$straglr --loci $tr_bed $bam $genome ${out_prefix} --max_str_len $max_str_len --min_str_len $min_str_len --nprocs ${threads} --min_support 5
+myprint "done, out_prefix is $out_prefix"
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Threads is $threads"
+myprint "Program is done"
+

@@ -1,0 +1,47 @@
+#PBS -j oe
+
+##### other PBS arguments
+#PBS -N cal_depth_NA12878
+#PBS -o logs/cal_depth.log
+#PBS -l nodes=1:ppn=4
+#PBS -q fsh_team
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+#arguments: work_dir input_bam out_prefix threads 
+work_dir=
+input_bam=
+out_prefix=
+threads=4
+
+########################## softwares ##########################
+mosdepth="/public/home/fan_lab/wangjie/Programs/bin/mosdepth"
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to analysis"
+myprint "out_prefix is $out_prefix"
+myprint "input bam is $input_bam"
+myprint "Threads is $threads"
+
+$mosdepth -n --fast-mode --by 500 ${out_prefix} ${input_bam} -t ${threads}
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Program is done"
+

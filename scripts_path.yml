@@ -1,0 +1,5 @@
+winnowmap_align.sh: 
+    ./utils/workflow_scripts/winnowmap_align.sh
+    ./deeptrio_variant/whatshap/winnowmap_align.sh
+    ./STR/check_han_ONT/02_scripts/winnowmap_align.sh
+

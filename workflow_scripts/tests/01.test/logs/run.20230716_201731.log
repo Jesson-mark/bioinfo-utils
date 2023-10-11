@@ -1,0 +1,18 @@
+INFO 2023-07-16 20:17:31,972 workflow_manager.py main[line:166] : Arguments:
+INFO 2023-07-16 20:17:31,972 workflow_manager.py main[line:168] : {
+    "project_dir": "tests/01.test",
+    "run": "all",
+    "dry_run": true,
+    "force": false
+}
+INFO 2023-07-16 20:17:31,973 workflow_manager.py main[line:170] : project_dir is tests/01.test
+INFO 2023-07-16 20:17:31,973 workflow_manager.py main[line:171] : run is all
+INFO 2023-07-16 20:17:31,973 workflow_manager.py main[line:172] : dry_run is True
+INFO 2023-07-16 20:17:31,973 workflow_manager.py main[line:200] : ************ Dry-run mode is on. Only list command but do not execute commands ************
+
+INFO 2023-07-16 20:17:31,974 workflow_manager.py check_tasks[line:59] : ************ Checking tasks ************
+
+INFO 2023-07-16 20:17:31,974 workflow_manager.py check_tasks[line:68] : Task task1 not done
+INFO 2023-07-16 20:17:31,975 workflow_manager.py check_tasks[line:68] : Task task2 not done
+INFO 2023-07-16 20:17:31,975 workflow_manager.py check_tasks[line:68] : Task task3 not done
+INFO 2023-07-16 20:17:31,976 workflow_manager.py check_tasks[line:68] : Task task4 not done

@@ -1,0 +1,75 @@
+#PBS -j oe
+#PBS -N hg002_align
+#PBS -l nodes=1:ppn=36
+#PBS -o /public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/logs/align_2022_10_28-14_30.log
+#PBS -q fat
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+########################## Arguments ##########################
+#arguments: work_dir, data, preset out_prefix, threads, enable_soft_clipping
+work_dir=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002
+data=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/01_correction/corrected_reads.fa.gz
+preset=ont
+out_prefix=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/02_alignment/corrected
+threads=36
+enable_soft_clipping=y
+
+########################## softwares ##########################
+samtools="/public/home/fan_lab/wangjie/Programs/samtools-1.13/bin/samtools"
+minimap2="/public/home/fan_lab/wangjie/Programs/minimap2_2.24/minimap2"
+genome="/public/home/fan_lab/wangjie/genome/hg38/hg38_22_XYM.fa"
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to analysis"
+
+out_raw_bam=${out_prefix}.q20.bam
+out_sort_bam=${out_prefix}.q20.sort.bam
+
+if [ $preset == "hifi" ]; then
+	if [[ $enable_soft_clipping == "y" ]]; then
+		$minimap2 -t ${threads} -ax map-hifi -Y $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+	else
+		$minimap2 -t ${threads} -ax map-hifi $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+	fi
+elif [ $preset == "ont" ]; then
+	if [[ $enable_soft_clipping == "y" ]]; then
+		$minimap2 -t ${threads} -ax map-ont -Y $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+	else
+		$minimap2 -t ${threads} -ax map-ont $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+	fi
+elif [ $preset == "fasta" ]; then
+	if [[ $enable_soft_clipping == "y" ]]; then
+		$minimap2 -t ${threads} -a -Y $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+	else
+		$minimap2 -t ${threads} -a $genome ${data} | $samtools view -bS -q 20 -@ ${threads} > ${out_raw_bam}
+	fi
+fi
+
+myprint "Converting sam to bam, sorting bam..."
+$samtools sort -l 5 -@ ${threads} -o ${out_sort_bam} ${out_raw_bam}
+$samtools index -@ ${threads} ${out_sort_bam}
+
+myprint "raw bam size are as follows"
+ls -lh ${out_raw_bam}
+
+myprint "Cleaning unsorted bam..."
+rm ${out_raw_bam}
+
+########################## Done ##########################
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; mins=int(total_sec/60); hours=int(mins/60); left_mins=mins%60; printf("Total time: %d hours, %d minutes.\n", hours, left_mins);}'
+
+myprint "Threads is $threads"
+myprint "Program is done"

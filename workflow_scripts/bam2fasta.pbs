@@ -1,0 +1,36 @@
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+# work_dir bam threads out_fasta
+
+########################## softwares ##########################
+samtools=/public/home/fan_lab/wangjie/Programs/samtools-1.13/bin/samtools
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Threads is $threads"
+myprint "Begin to analysis"
+
+myprint "fetching reads from $bam"
+$samtools fasta -@ $threads $bam | gzip > $out_fasta
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Program is done"
+

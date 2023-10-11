@@ -1,0 +1,2 @@
+HG002_b00	test_vntr_wrkf/sample_ids/call_vntr_sample_batch_ids.txt	mini	1	2023-0221-2019
+HG002_b01	test_vntr_wrkf/sample_ids/call_vntr_sample_batch_ids.txt	mini	1	2023-0221-2023

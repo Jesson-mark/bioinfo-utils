@@ -1,0 +1,16 @@
+[ 2023-02-21 20:23:03 ] [ Working dir is: /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/test_vntr_wrkf/per_sample_dir/HG002 ]
+[ 2023-02-21 20:23:03 ] [ Begin to analysis. Threads is 1 ]
+[ 2023-02-21 20:23:03 ] [ tr_bed is /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/ref_vntr/splitted/ref_vntr_b01.tsv, bam is /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/bams/HG002_part_HiFi.sort.bam, out_prefix is /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/test_vntr_wrkf/per_sample_dir/HG002/raw/HG002_b01 ]
+[ 2023-02-21 20:23:03 ] [ max_str_len is 1992, min_str_len is 1 ]
+2023-02-21 20:23:16 INFO tre.py genotype[line:1153] : Total 12 loci are loaded
+2023-02-21 20:23:17 INFO tre.py get_alleles[line:882] : Begin to construct trf input
+2023-02-21 20:23:17 INFO tre.py extract_alleles_trf[line:563] : Begin to perform trf
+2023-02-21 20:23:17 INFO tre.py perform_trf[line:442] : Begin to run trf for /tmp/HG002_b01_dkrnx9z8
+2023-02-21 20:23:19 INFO tre.py perform_trf[line:444] : Begin to parse result of trf for /tmp/HG002_b01_dkrnx9z8
+2023-02-21 20:23:19 INFO tre.py extract_alleles_trf[line:565] : Begin to run find_similar_long_patterns_gt
+2023-02-21 20:23:20 INFO tre.py extract_alleles_trf[line:571] : Begin to group alleles by locus
+2023-02-21 20:23:20 INFO tre.py get_alleles[line:1057] : Begin to genotype vntrs by GMM
+[ 2023-02-21 20:23:21 ] [ done, out_prefix is /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/test_vntr_wrkf/per_sample_dir/HG002/raw/HG002_b01 ]
+Total time: 0 minutes, 18 seconds.
+[ 2023-02-21 20:23:21 ] [ Threads is 1 ]
+[ 2023-02-21 20:23:21 ] [ Program is done ]

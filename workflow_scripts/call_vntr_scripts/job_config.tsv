@@ -1,0 +1,3 @@
+shorter_job_type	job_type	log_dir	has_run_samples_ids	running_samples_ids	success_samples_ids
+vntr	call_vntr	logs/call_vntr/	test_vntr_wrkf/sample_ids/call_vntr_has_run.txt	test_vntr_wrkf/sample_ids/call_vntr_running.txt	test_vntr_wrkf/sample_ids/call_vntr_success.txt
+cln-tr	clean_vntr	logs/clean_vntr/	test_vntr_wrkf/sample_ids/clean_vntr_has_run.txt	test_vntr_wrkf/sample_ids/clean_vntr_running.txt	test_vntr_wrkf/sample_ids/clean_vntr_success.txt

@@ -1,0 +1,13 @@
+Begin to stats
+
+home_dir is /public/home/fan_lab/wangjie
+group_share_dir is /public/group_share_data/fan_lab/wangjie
+dwh_dir is /mnt/DWH/zone00/groups_data/fan_lab/wangjie/
+size of home: 230G
+number of files of home: 1110568
+size of group_share: 11T
+number of files of group_share: 76516
+size of DWH: 5.0T
+
+Done
+Total time: 24 minutes, 15 seconds.

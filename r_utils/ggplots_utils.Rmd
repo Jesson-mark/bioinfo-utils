@@ -1,0 +1,89 @@
+# boxplot + dotplot
+
+```{r}
+library(ggplot2)
+# theme_set(theme_bw())
+head(mpg)
+
+# plot
+mpg$year <- factor(mpg$year)
+g <- ggplot(mpg, aes(x=drv, y=hwy))
+g + geom_boxplot(width=.3) +
+	geom_violin(alpha=0.5, width=0.8) +
+	theme_classic() +
+	geom_dotplot(binaxis='y', 
+				stackdir='center', 
+				dotsize = .2) 
+
+g + geom_boxplot() + 
+  geom_dotplot(binaxis='y', 
+               stackdir='center', 
+               dotsize = .5, 
+               fill="red") +
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Box plot + Dot plot", 
+       subtitle="City Mileage vs Class: Each dot represents 1 row in source data",
+       caption="Source: mpg",
+       x="Class of Vehicle",
+       y="City Mileage")
+
+```
+
+# 好看的配色方案
+
+```{r}
+source('/public/home/fan_lab/wangjie/utils/r_utils/set_gg_themes.R')
+set_classic_theme()
+
+library(ggplot2)
+df <- data.frame(
+  'type' = c('a', 'b', 'c', 'd', 'e', 'f'), 
+  'num' = rep(1, 6)
+)
+color_cfg <- c('#b99774', '#6b423c', '#656654', '#3a3647', '#b1785d', '#56628b')
+names(color_cfg) <- df$type
+
+# 饼图
+ggplot(df, aes(x="", y=num, fill=type)) +
+	geom_bar(stat='identity', width = .3) +
+	scale_fill_manual(
+		values = color_cfg, 
+		name = '', 
+		labels = color_cfg
+	) +
+	labs(x="", y="") +
+	coord_polar(theta = 'y') +
+	theme(
+		axis.line = element_blank(), # 去掉xy坐标轴
+		axis.ticks = element_blank(), # 去掉坐标轴上的刻度线
+		axis.text = element_blank() # 将坐标轴上的文本去掉
+	)
+
+# 饼环
+df$freq <- df$num / sum(df$num)
+df$ymax <- cumsum(df$freq)
+df$ymin <- c(0, head(df$ymax, n=-1))
+df
+ggplot(df, aes(xmin=3, xmax=4, ymin=ymin, ymax=ymax, fill=type)) +
+	geom_rect() +
+	scale_fill_manual(
+		values = color_cfg, 
+		name = '', 
+		labels = color_cfg
+	) +
+	labs(x="", y="") + 
+	xlim(2,4) +
+	coord_polar(theta = 'y') +
+	theme(
+		axis.line = element_blank(), # 去掉xy坐标轴
+		axis.ticks = element_blank(), # 去掉坐标轴上的刻度线
+		axis.text = element_blank() # 将坐标轴上的文本去掉
+	)
+
+
+
+
+```
+
+
+

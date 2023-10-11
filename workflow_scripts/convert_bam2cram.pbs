@@ -1,0 +1,38 @@
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+# work_dir raw_bam out_cram ref_genome threads
+
+########################## softwares ##########################
+seqkit=/public/home/fan_lab/wangjie//Programs/bin/seqkit
+export PATH=/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin:$PATH # 
+export PATH=/public/home/fan_lab/wangjie/Programs/NextDenovo:$PATH
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to convert ${raw_bam} to ${out_cram}"
+
+samtools view -T $ref_genome -C -o ${out_cram} ${raw_bam} -@ ${threads}
+samtools index -@ ${threads} ${out_cram}
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Threads is $threads"
+myprint "Program is done"
+

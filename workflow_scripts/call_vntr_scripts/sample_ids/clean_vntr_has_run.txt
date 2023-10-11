@@ -1,0 +1,1 @@
+HG002	sample_ids/batch_vntr_merge_done.txt	default	1	2023-0214-1812

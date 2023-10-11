@@ -1,0 +1,51 @@
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+# 目的：
+# 对hifi和ont数据的vntr结果进行压缩
+#1 删除raw目录里面的batch结果
+#2 压缩raw.bed和raw.tsv文件
+
+########################## Arguments ##########################
+#arguments: work_dir straglr_results_dir
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "straglr_results_dir is $straglr_results_dir"
+
+raw_dir=${straglr_results_dir}/raw
+raw_bed=${straglr_results_dir}/raw.bed
+raw_tsv=${straglr_results_dir}/raw.tsv
+
+if [[ -f $raw_bed && -f $raw_tsv ]]; then
+    myprint "raw.bed and raw.tsv both exist, will compress them and remove raw results"
+    gzip $raw_bed 
+    gzip $raw_tsv
+
+    rm -rf $raw_dir/*
+
+elif [[ -f ${raw_bed}.gz && -f ${raw_tsv}.gz ]]; then
+    myprint "raw.bed and raw.tsv have already been compressed, exit"
+else
+    myprint "Error! raw.bed and raw.tsv not exist! Please check it."
+    exit 1
+fi
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Program is done"
+

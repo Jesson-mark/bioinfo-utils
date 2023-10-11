@@ -1,0 +1,82 @@
+#PBS -j oe
+#PBS -N hg002_correct
+#PBS -l nodes=1:ppn=36
+#PBS -o /public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/logs/correct_2022_10_28-14_30.log
+#PBS -q fat
+#PBS -l mem=600gb
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+# work_dir sample_out_dir sample_id corrected_reads threads
+#!!! Note: This script will enter sample_out_dir, so corrected_reads must be absolute path
+
+work_dir=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002
+sample_out_dir=01_correction
+sample_id=hg002
+corrected_reads=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/01_correction/corrected_reads.fa.gz
+threads=36
+
+########################## softwares ##########################
+seqkit=/public/home/fan_lab/wangjie//Programs/bin/seqkit
+export PATH=/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin:$PATH 
+export PATH=/public/home/fan_lab/wangjie/Programs/NextDenovo:$PATH
+
+########################## Change workdir ##########################
+# change workdir
+sample_work_dir=${work_dir}/${sample_out_dir}
+myprint "Working dir is: "${sample_work_dir}
+cd ${sample_work_dir}
+
+########################## Begin ##########################
+myprint "Begin to analysis"
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+nextDenovo run.cfg
+myprint "Correct done for sample $sample_id"
+
+myprint "Merging cns fasta ..."
+concat_threads=4
+time $seqkit scat -i fasta -j ${concat_threads} -f 02.cns_align/01.seed_cns.sh.work/ -o $corrected_reads 
+set +e # 遇到报错也不退出shell
+
+myprint "removing db_split result of $sample_id"
+myprint "cmd is: rm 01.raw_align/*.2bit, rm 01.raw_align/input.seed*, rm 01.raw_align/.input.seed*"
+rm 01.raw_align/*.2bit
+rm 01.raw_align/.input.seed*
+
+myprint "removing sort_align result of $sample_id"
+myprint "cmd is: rm 01.raw_align/04.sort_align.sh.work/sort_align*/*ovl, rm 01.raw_align/04.sort_align.sh.work/sort_align*/*ovl.bl"
+rm 01.raw_align/04.sort_align.sh.work/sort_align*/*ovl
+rm 01.raw_align/04.sort_align.sh.work/sort_align*/*ovl.bl
+
+myprint "removing seed_cns result of $sample_id"
+myprint "cmd is: rm 02.cns_align/01.seed_cns.sh.work/seed_cns*/cns.fasta"
+rm 02.cns_align/01.seed_cns.sh.work/seed_cns*/cns.fasta
+rm 02.cns_align/01.seed_cns.sh.work/seed_cns*/cns.fasta.idx
+
+# 打包压缩日志文件
+myprint "will pack and compress results to job_history"
+if [[ ! -d "job_history" ]]; then
+	myprint "dir job_history not exists, will make it "
+	mkdir job_history
+fi
+curr_time=`date "+%Y-%m%d-%H%M"`
+tar_result=hg002_$curr_time.tar.gz
+myprint "cmd is: tar -zvcf $tar_result 01.raw_align 02.cns_align 03.ctg_graph"
+tar -zvcf job_history/$tar_result 01.raw_align 02.cns_align 03.ctg_graph
+
+myprint "done for packing and compressing, result is $tar_result, will remove those three dirs"
+rm -rf 01.raw_align 02.cns_align 03.ctg_graph
+
+touch correction.done
+
+########################## Done ##########################
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; mins=int(total_sec/60); hours=int(mins/60); left_mins=mins%60; printf("Total time: %d hours, %d minutes.\n", hours, left_mins);}'
+
+myprint "Threads is $threads"
+myprint "Program is done"

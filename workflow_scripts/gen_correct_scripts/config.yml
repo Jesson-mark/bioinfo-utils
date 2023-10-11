@@ -1,0 +1,15 @@
+sample_id: hg002
+work_dir: hg002
+input_files: 
+    - /public/home/fan_lab/wangjie/GIAB_trio/HG002_ONT/fastqs/GM24385_1.fastq.gz
+    - /public/home/fan_lab/wangjie/GIAB_trio/HG002_ONT/fastqs/GM24385_2.fastq.gz
+    - /public/home/fan_lab/wangjie/GIAB_trio/HG002_ONT/fastqs/GM24385_3.fastq.gz
+job_queue: fat
+total_threads: 36
+parallel_jobs: 6
+applied_memory: 600gb
+sort_options_mem: 80g
+minimap2_I_mem: 20G
+genome_size: 3g
+enable_soft_clipping: y
+cal_depth_threads: 4

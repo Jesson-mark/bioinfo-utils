@@ -1,0 +1,14 @@
+Begin to stats
+
+home_dir is /public/home/fan_lab/wangjie
+group_share_dir is /public/group_share_data/fan_lab/wangjie
+dwh_dir is /mnt/DWH/zone00/groups_data/fan_lab/wangjie/
+size of home: 1.5T
+number of files of home: 961073
+size of group_share: 13T
+number of files of group_share: 37728
+du: cannot access ‘/mnt/DWH/zone00/groups_data/fan_lab/wangjie/’: No such file or directory
+size of DWH: 
+
+Done
+Total time: 19 minutes, 17 seconds.

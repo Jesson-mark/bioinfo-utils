@@ -1,0 +1,16 @@
+330G	alignment
+122G	assembly_trio
+92G	data
+672G	deeptrio_variant
+13G	dipcall_variant
+40G	genome
+207G	han_data
+49G	hpgp_assembly
+5.2G	miniconda3
+4.0K	perl5
+8.5G	Programs
+15M	scikit_learn_data
+6.8G	singularity_images
+281G	STR
+29K	utils
+35M	yfji

@@ -1,0 +1,5 @@
+HG002_b00	sample_ids/call_vntr_sample_batch_ids.txt	default	1	2023-0214-1743
+HG002_b01	sample_ids/call_vntr_sample_batch_ids.txt	default	1	2023-0214-1743
+HG002_b02	sample_ids/call_vntr_sample_batch_ids.txt	default	1	2023-0214-1743
+HG002_b03	sample_ids/call_vntr_sample_batch_ids.txt	default	1	2023-0214-1743
+HG002_b04	sample_ids/call_vntr_sample_batch_ids.txt	default	1	2023-0214-1743

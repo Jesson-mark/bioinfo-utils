@@ -1,0 +1,75 @@
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+#arguments: work_dir data preset genome out_prefix threads enable_soft_clipping
+
+########################## softwares ##########################
+samtools="/public/home/fan_lab/wangjie/Programs/samtools-1.13/bin/samtools"
+minimap2="/public/home/fan_lab/wangjie/Programs/minimap2_2.24/minimap2"
+# genome="/public/home/fan_lab/wangjie/genome/hg38/hg38_22_XYM.fa"
+# genome_mmi="/public/home/fan_lab/wangjie/genome/hg38/hg38_22_XYM_map_ont.mmi"
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to analysis"
+
+out_raw_bam=${out_prefix}.bam
+out_sort_bam=${out_prefix}.sort.bam
+
+if [ $preset == 'hifi' ]; then
+    if [[ $enable_soft_clipping == 'y' ]]; then
+        $minimap2 -t ${threads} -ax map-hifi -Y $genome ${data} | $samtools view -bS -@ ${threads} > ${out_raw_bam}
+    else
+        $minimap2 -t ${threads} -ax map-hifi $genome ${data} | $samtools view -bS -@ ${threads} > ${out_raw_bam}
+    fi
+elif [ $preset == 'ont' ]; then
+    if [[ $enable_soft_clipping == 'y' ]]; then
+        $minimap2 -t ${threads} -ax map-ont -Y $genome ${data} | $samtools view -bS -@ ${threads} > ${out_raw_bam}
+    else
+        $minimap2 -t ${threads} -ax map-ont $genome ${data} | $samtools view -bS -@ ${threads} > ${out_raw_bam}
+    fi
+elif [ $preset == 'fasta' ]; then
+    if [[ $enable_soft_clipping == 'y' ]]; then
+        $minimap2 -t ${threads} -a -Y $genome ${data} | $samtools view -bS -@ ${threads} > ${out_raw_bam}
+    else
+        $minimap2 -t ${threads} -a $genome ${data} | $samtools view -bS -@ ${threads} > ${out_raw_bam}
+    fi
+fi
+
+myprint "Converting sam to bam, sorting bam..."
+$samtools sort -l 5 -@ ${threads} -o ${out_sort_bam} ${out_raw_bam}
+$samtools index -@ ${threads} ${out_sort_bam}
+
+myprint "raw bam size are as follows"
+ls -lh ${out_raw_bam}
+
+myprint "Cleaning unsorted bam..."
+rm ${out_raw_bam}
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Threads is $threads"
+myprint "Program is done"
+
+##### Update logs
+### 2023.5.19 
+#1. paste out_dir and out_prefix into out_prefix, remove out_dir arguments
+#2. remove q20 threshold, keep all alignments 
+#3. move genome into arguments
+

@@ -1,0 +1,48 @@
+#PBS -j oe
+#PBS -o logs/cal_boc.log
+#PBS -q fat
+#PBS -l nodes=1:ppn=4
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+# work_dir raw_bam phased_snp haplotagged_bam threads
+ulimit -u 10000 # https://stackoverflow.com/questions/52026652/openblas-blas-thread-init-pthread-create-resource-temporarily-unavailable/54746150#54746150
+reference=/public/group_share_data/fan_lab/wangjie/genome/hg38/hg38_22_XYM.fa
+
+########################## softwares ##########################
+whatshap="/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin/whatshap"
+tabix=/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin/tabix
+samtools=/public/home/fan_lab/wangjie/Programs/samtools-1.13/bin/samtools
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+
+myprint "Begin to haplotag bam"
+myprint "raw_bam is $raw_bam"
+myprint "phased_snp is $phased_snp"
+myprint "haplotagged_bam is $haplotagged_bam"
+$whatshap haplotag --output ${haplotagged_bam} --reference ${reference} \
+    --ignore-read-groups ${phased_snp} ${raw_bam} --output-threads ${threads}
+
+$samtools index ${haplotagged_bam}
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Threads is $threads"
+myprint "Program is done"
+

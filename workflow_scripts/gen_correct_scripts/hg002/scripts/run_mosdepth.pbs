@@ -1,0 +1,44 @@
+#PBS -j oe
+#PBS -N hg002_cal_depth
+#PBS -l nodes=1:ppn=4
+#PBS -o /public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/logs/cal_depth_2022_10_28-14_30.log
+#PBS -q fat
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+#arguments: work_dir input_bam out_prefix threads 
+work_dir=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002
+input_bam=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/02_alignment/corrected.q20.sort.bam
+out_prefix=/public/group_share_data/fan_lab/wangjie/GIAB_trio/utils/gen_correct_scripts/hg002/03_mean_depth/mean_depth
+threads=4
+
+########################## softwares ##########################
+mosdepth="/public/home/fan_lab/wangjie/Programs/bin/mosdepth"
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+myprint "Begin to analysis"
+myprint "out_prefix is $out_prefix"
+myprint "input bam is $input_bam"
+myprint "Threads is $threads"
+
+$mosdepth -n --fast-mode --by 500 ${out_prefix} ${input_bam} -t ${threads}
+
+########################## Done ##########################
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; mins=int(total_sec/60); hours=int(mins/60); left_mins=mins%60; printf("Total time: %d hours, %d minutes.\n", hours, left_mins);}'
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; mins=int(total_sec/60); left_secs=mins%60; printf("Total time: %d minutes, %d seconds.\n", mins, left_secs);}'
+myprint "Program is done"

@@ -1,0 +1,5 @@
+[ 2023-02-21 14:24:47 ] [ Working dir is: /public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts ]
+[ 2023-02-21 14:24:47 ] [ straglr_results_dir is vntr_results/per_sample_dir/HG002 ]
+[ 2023-02-21 14:24:47 ] [ raw.bed and raw.tsv both exist, will compress them and remove raw results ]
+Total time: 0 minutes, 0 seconds.
+[ 2023-02-21 14:24:47 ] [ Program is done ]

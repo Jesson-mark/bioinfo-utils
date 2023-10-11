@@ -1,0 +1,56 @@
+
+
+#PBS -j oe
+
+########################## Presets ##########################
+set -ue
+source "/public/home/fan_lab/wangjie/utils/shell_utils/utils.sh"
+
+########################## Arguments ##########################
+#arguments: work_dir sample_id raw_bed raw_tsv out_prefix tr_region 
+
+########################## softwares ##########################
+python='/public/home/fan_lab/wangjie/miniconda3/envs/straglr/bin/python'
+bgzip=/public/home/fan_lab/wangjie/Programs/htslib-1.15.1/bin/bgzip
+bcftools=/public/home/fan_lab/wangjie/Programs/bcftools/bin/bcftools
+tabix=/public/home/fan_lab/wangjie/Programs/htslib-1.15.1/bin/tabix
+clean_script=/public/home/fan_lab/wangjie/utils/workflow_scripts/call_vntr_scripts/scripts/clean_straglr_result.py
+
+########################## Change workdir ##########################
+myprint "Working dir is: "${work_dir}
+cd ${work_dir}
+
+########################## Begin ##########################
+# scripts
+myprint "Begin to analysis"
+myprint "sample_id is $sample_id"
+myprint "raw_bed is $raw_bed"
+myprint "out_prefix is $out_prefix"
+myprint "tr_region is $tr_region"
+
+starttime=`date +'%Y-%m-%d %H:%M:%S'`
+
+$python $clean_script -s $sample_id -i $raw_bed --tsv_file $raw_tsv -o ${out_prefix}.vcf -tr $tr_region
+
+# 压缩
+$bgzip -f ${out_prefix}.vcf
+
+# 排序并建立索引
+sorted_file=${out_prefix}.sorted.vcf.gz
+myprint "Begin to sort vcf file, result is ${sorted_file}"
+$bcftools sort ${out_prefix}.vcf.gz -o ${sorted_file}
+$tabix -p vcf ${sorted_file}
+
+myprint "Final result is ${sorted_file}"
+
+########################## Done ##########################
+
+# 计时结束
+endtime=`date +'%Y-%m-%d %H:%M:%S'`
+start_seconds=$(date --date="$starttime" +%s); # 将时间转换成秒数
+end_seconds=$(date --date="$endtime" +%s);
+
+echo $start_seconds $end_seconds | awk '{total_sec=$2-$1; min=int(total_sec/60); lef_sec=total_sec%60; printf("Total time: %d minutes, %d seconds.\n", min, lef_sec); }'
+
+myprint "Program is done"
+
